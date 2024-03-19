@@ -24,7 +24,7 @@ pipeline {
                    sh 'docker login -u ankit787 -p ${dockerhubpwd}'
 
 }
-                   sh 'docker push ankit74200/devops-integration'
+                   sh 'docker push ankit787/devops-integration'
                 }
             }
         }
