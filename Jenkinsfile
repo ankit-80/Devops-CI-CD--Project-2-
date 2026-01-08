@@ -6,7 +6,7 @@ pipeline {
     stages{
         stage('Build Maven'){
             steps{
-                git 'https://github.com/ankit-jagtap-devops/devops-cicd-ygminds.git'
+                git 'https://github.com/ankit-80/Devops-CI-CD--Project-2-.git'
                 sh 'mvn clean install'
             }
         }
