@@ -29,7 +29,7 @@ pipeline {
                 )]) {
                     sh '''
                       echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                      docker push ankit787/devops-integration:latest
+                      docker push ankit787/devops-integration:${BUILD_NUMBER}
                     '''
                 }
             }
@@ -38,6 +38,14 @@ pipeline {
         stage('EKS and Kubectl Configuration') {
             steps {
                 sh 'aws eks update-kubeconfig --region ap-south-1 --name ankit-cluster'
+            }
+        }
+
+        stage('Update Deployment Image') {
+            steps {
+                sh '''
+                  sed -i "s/BUILD_NUMBER/${BUILD_NUMBER}/g" deploymentservice.yaml
+                '''
             }
         }
 
