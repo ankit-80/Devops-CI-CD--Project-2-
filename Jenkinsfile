@@ -16,7 +16,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ankit787/devops-integration:latest .'
+                sh 'docker build -t ankit787/devops-integration:${BUILD_NUMBER} .'
             }
         }
 
