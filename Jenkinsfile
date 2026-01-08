@@ -1,45 +1,49 @@
 pipeline {
     agent any
-    tools{
+
+    tools {
         maven 'maven'
     }
-    stages{
-        stage('Build Maven'){
-            steps{
+
+    stages {
+
+        stage('Build Maven') {
+            steps {
                 git 'https://github.com/ankit-80/Devops-CI-CD--Project-2-.git'
                 sh 'mvn clean install'
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker buildx build -t ankit787/devops-integration .'
-                }
-            }
-        }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u ankit787 -p ${dockerhubpwd}'
 
-}
-                   sh 'docker push ankit787/devops-integration'
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ankit787/devops-integration:latest .'
+            }
+        }
+
+        stage('Push Image to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-pwd',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                      echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                      docker push ankit787/devops-integration:latest
+                    '''
                 }
             }
         }
-        stage('EKS and Kubectl configuration'){
-            steps{
-                script{
-                    sh 'aws eks update-kubeconfig --region ap-south-1 --name ankit-cluster'
-                }
+
+        stage('EKS and Kubectl Configuration') {
+            steps {
+                sh 'aws eks update-kubeconfig --region ap-south-1 --name ankit-cluster'
             }
         }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    sh 'kubectl apply -f deploymentservice.yaml'
-                }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f deploymentservice.yaml'
             }
         }
     }
